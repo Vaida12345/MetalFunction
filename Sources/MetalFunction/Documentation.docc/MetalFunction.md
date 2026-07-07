@@ -15,7 +15,8 @@ The bridge to a Metal function.
 - ``buffer(copying:)``
 
 ### Bytes Argument
-- ``bytes(_:)``
+- ``bytes(_:)-(T)``
+- ``bytes(_:)-([T])``
 
 ### Execute
 - ``execute(width:height:depth:)``

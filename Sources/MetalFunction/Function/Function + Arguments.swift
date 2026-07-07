@@ -78,5 +78,18 @@ extension MetalFunction {
         return offsetPlusOne()
     }
     
+    /// Copies data directly to the GPU to populate an entry in the buffer argument table.
+    ///
+    /// - Important: This method only works for data smaller than 4 kilobytes that doesn’t persist. Create an MTLBuffer instance if your data exceeds 4 KB, needs to persist on the GPU, or you access results on the CPU.
+    ///
+    /// This method allows Metal to copy data efficiently onto the GPU without the need for your own buffer. Binding data directly can improve performance, especially when making many small allocations.
+    @inlinable
+    public func bytes<T>(_ value: Array<T>) -> MetalFunction where T: BitwiseCopyable {
+        value.withUnsafeBytes {
+            self.commandEncoder.setBytes($0.baseAddress!, length: MemoryLayout<T>.stride * value.count, index: self.offset)
+        }
+        return offsetPlusOne()
+    }
+    
     
 }
