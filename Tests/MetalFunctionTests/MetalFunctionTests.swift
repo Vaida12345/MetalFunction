@@ -12,6 +12,23 @@ import MetalFunction
     #expect(Array(buffer) == [6, 7, 8, 9, 10])
 }
 
+@Test func reuseFunction() async throws {
+    let buffer = UnsafeMutableBufferPointer<Float>.allocate(capacity: 5)
+    _ = buffer.initialize(from: stride(from: 1, through: 5, by: 1))
+    
+    try await MetalFunction(name: "add_five", bundle: .module)
+        .buffer(buffer)
+        .execute(width: 5)
+    
+    #expect(Array(buffer) == [6, 7, 8, 9, 10])
+    
+    try await MetalFunction(name: "add_five", bundle: .module)
+        .buffer(buffer)
+        .execute(width: 5)
+    
+    #expect(Array(buffer) == [11, 12, 13, 14, 15])
+}
+
 @Test func specialize() async throws {
     let buffer = UnsafeMutableBufferPointer<Float>.allocate(capacity: 5)
     _ = buffer.initialize(from: stride(from: 1, through: 5, by: 1))
