@@ -12,7 +12,8 @@ extension MetalFunction {
     
     @inlinable
     func offsetPlusOne() -> MetalFunction {
-        MetalFunction(pipelineState: self.pipelineState, commandBuffer: self.commandBuffer, commandEncoder: self.commandEncoder, offset: self.offset + 1)
+        self.offset += 1
+        return self
     }
     
     /// Pass a `MTLBuffer`.

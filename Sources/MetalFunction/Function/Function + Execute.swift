@@ -12,16 +12,12 @@ func optimalThreadsPerThreadgroup(
     for pipelineState: MTLComputePipelineState,
     gridSize: MTLSize
 ) -> MTLSize {
-    precondition(gridSize.width > 0)
-    precondition(gridSize.height > 0)
-    precondition(gridSize.depth > 0)
-    
     let simdWidth = max(1, pipelineState.threadExecutionWidth)
     let maxThreads = max(1, pipelineState.maxTotalThreadsPerThreadgroup)
     
-    let width = gridSize.width
-    let height = gridSize.height
-    let depth = gridSize.depth
+    let width = max(gridSize.width, 1)
+    let height = max(gridSize.height, 1)
+    let depth = max(gridSize.depth, 1)
     
     // 1D case
     if height == 1 && depth == 1 {
@@ -105,6 +101,7 @@ extension MetalFunction {
         
         self.commandEncoder.endEncoding()
         self.commandBuffer.commit()
+        self.offset = .min
         
         await self.commandBuffer.completed()
         

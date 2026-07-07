@@ -10,7 +10,7 @@ import Metal
 
 
 /// The bridge to a Metal function.
-public struct MetalFunction {
+public final class MetalFunction {
     
     @usableFromInline
     let pipelineState: any MTLComputePipelineState
@@ -25,10 +25,10 @@ public struct MetalFunction {
     
     /// Argument offset
     @usableFromInline
-    let offset: Int
+    var offset: Int
     
     /// Returns whether metal is supported on this device.
-    public static var isSupported: Bool {
+    public nonisolated static var isSupported: Bool {
         MetalExecutor.shared != nil
     }
     
@@ -82,6 +82,13 @@ public struct MetalFunction {
         self.commandBuffer = commandBuffer
         self.commandEncoder = commandEncoder
         self.offset = offset
+    }
+    
+    deinit {
+        if self.offset >= 0 {
+            // must call `endEncoding` at least once.
+            self.commandEncoder.endEncoding()
+        }
     }
     
     struct LookupKey: Hashable {

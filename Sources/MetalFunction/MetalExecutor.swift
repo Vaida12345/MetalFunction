@@ -29,7 +29,7 @@ final actor MetalExecutor {
         name: String,
         bundle: Bundle,
         constants: sending [MetalFunction.Constant]
-    ) async throws -> (function: any MTLFunction, pipelineState: any MTLComputePipelineState) {
+    ) async throws -> sending (function: any MTLFunction, pipelineState: any MTLComputePipelineState) {
         let lookupKey = MetalFunction.LookupKey(bundle: bundle, name: name, constants: constants)
         
         if let cache = self.functions[lookupKey] {

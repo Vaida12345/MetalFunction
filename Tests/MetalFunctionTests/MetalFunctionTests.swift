@@ -3,6 +3,7 @@ import MetalFunction
 
 @Test func example() async throws {
     let buffer = UnsafeMutableBufferPointer<Float>.allocate(capacity: 5)
+    defer { buffer.deallocate() }
     _ = buffer.initialize(from: stride(from: 1, through: 5, by: 1))
     
     try await MetalFunction(name: "add_five", bundle: .module)
@@ -14,6 +15,7 @@ import MetalFunction
 
 @Test func reuseFunction() async throws {
     let buffer = UnsafeMutableBufferPointer<Float>.allocate(capacity: 5)
+    defer { buffer.deallocate() }
     _ = buffer.initialize(from: stride(from: 1, through: 5, by: 1))
     
     try await MetalFunction(name: "add_five", bundle: .module)
@@ -31,6 +33,7 @@ import MetalFunction
 
 @Test func specialize() async throws {
     let buffer = UnsafeMutableBufferPointer<Float>.allocate(capacity: 5)
+    defer { buffer.deallocate() }
     _ = buffer.initialize(from: stride(from: 1, through: 5, by: 1))
     
     try await MetalFunction(name: "add_const", bundle: .module, constants: [.bool(false)])
