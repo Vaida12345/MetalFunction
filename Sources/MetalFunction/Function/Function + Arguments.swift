@@ -17,6 +17,14 @@ extension MetalFunction {
     }
     
     /// Pass a `MTLBuffer`.
+    ///
+    /// You can use this method to attach an argument to MSL.
+    /// ```c
+    /// device float *buffer
+    /// ```
+    ///
+    /// - term device: Address space (GPU buffer memory)
+    /// - term const: the float values are read-only
     @inlinable
     public func buffer(_ buffer: any MTLBuffer) -> MetalFunction {
         self.commandEncoder.setBuffer(buffer, offset: 0, index: self.offset)
@@ -26,6 +34,14 @@ extension MetalFunction {
     /// Binds a `UnsafeMutableBufferPointer`.
     ///
     /// - Important: `buffer` is passed without copying, and it is the caller's responsibility to keep it valid for the duration of metal execution.
+    ///
+    /// You can use this method to attach an argument to MSL.
+    /// ```c
+    /// device float *buffer
+    /// ```
+    ///
+    /// - term device: Address space (GPU buffer memory)
+    /// - term const: the float values are read-only
     @inlinable
     public func buffer<T>(
         _ buffer: UnsafeMutableBufferPointer<T>,
@@ -37,6 +53,14 @@ extension MetalFunction {
     /// Binds a `UnsafeMutablePointer`.
     ///
     /// - Important: `buffer` is passed without copying, and it is the caller's responsibility to keep it valid for the duration of metal execution.
+    ///
+    /// You can use this method to attach an argument to MSL.
+    /// ```c
+    /// device float *start
+    /// ```
+    ///
+    /// - term device: Address space (GPU buffer memory)
+    /// - term const: the float values are read-only
     @inlinable
     public func buffer<T>(
         start: UnsafeMutablePointer<T>,
@@ -53,6 +77,14 @@ extension MetalFunction {
     }
     
     /// Copies an array as input buffer.
+    ///
+    /// You can use this method to attach an argument to MSL.
+    /// ```c
+    /// device const float *array
+    /// ```
+    ///
+    /// - term device: Address space (GPU buffer memory)
+    /// - term const: the float values are read-only
     @inlinable
     public func buffer<T>(
         copying array: Array<T>
@@ -71,6 +103,12 @@ extension MetalFunction {
     /// - Important: This method only works for data smaller than 4 kilobytes that doesn’t persist. Create an MTLBuffer instance if your data exceeds 4 KB, needs to persist on the GPU, or you access results on the CPU.
     ///
     /// This method allows Metal to copy data efficiently onto the GPU without the need for your own buffer. Binding data directly can improve performance, especially when making many small allocations.
+    ///
+    /// ```c
+    /// constant float& value
+    /// ```
+    ///
+    /// - term constant: Address space (read-only uniform memory)
     @inlinable
     public func bytes<T>(_ value: T) -> MetalFunction where T: BitwiseCopyable {
         withUnsafePointer(to: value) {
@@ -84,6 +122,12 @@ extension MetalFunction {
     /// - Important: This method only works for data smaller than 4 kilobytes that doesn’t persist. Create an MTLBuffer instance if your data exceeds 4 KB, needs to persist on the GPU, or you access results on the CPU.
     ///
     /// This method allows Metal to copy data efficiently onto the GPU without the need for your own buffer. Binding data directly can improve performance, especially when making many small allocations.
+    ///
+    /// ```c
+    /// constant float* array
+    /// ```
+    ///
+    /// - term constant: Address space (read-only uniform memory)
     @inlinable
     public func bytes<T>(_ value: Array<T>) -> MetalFunction where T: BitwiseCopyable {
         value.withUnsafeBytes {

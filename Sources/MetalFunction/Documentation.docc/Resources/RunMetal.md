@@ -11,9 +11,10 @@ To use metal, create a `.metal` file defining the function in Metal Shader Langu
 #include <metal_stdlib>
 using namespace metal;
 
-kernel void add_five(device float *data,
-                     uint id [[ thread_position_in_grid ]]) {
-    data[id] += 5.0;
+kernel void add_const(device float *data,
+                      constant float& other,
+                      uint id [[ thread_position_in_grid ]]) {
+    data[id] += other;
 }
 ```
 
@@ -22,7 +23,8 @@ kernel void add_five(device float *data,
 With this function, we can write Swift driver to use it.
 
 ```swift
-try await MetalFunction(name: "add_five", bundle: .module)
+try await MetalFunction(name: "add_const", bundle: .module)
     .buffer(buffer)
+    .bytes(5 as Float)
     .execute(width: buffer.count)
 ```

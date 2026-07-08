@@ -42,3 +42,16 @@ import MetalFunction
     
     #expect(Array(buffer) == [1, 2, 3, 4, 5])
 }
+
+@Test func bytes() async throws {
+    let buffer = UnsafeMutableBufferPointer<Float>.allocate(capacity: 5)
+    defer { buffer.deallocate() }
+    _ = buffer.initialize(from: stride(from: 1, through: 5, by: 1))
+    
+    try await MetalFunction(name: "add_constant", bundle: .module)
+        .buffer(buffer)
+        .bytes(5 as Float)
+        .execute(width: 5)
+    
+    #expect(Array(buffer) == [6, 7, 8, 9, 10])
+}
