@@ -1,6 +1,6 @@
 # ``MetalFunction``
 
-Lightweight metal helper.
+Lightweight one-shot, one Metal kernel package.
 
 ## Overview
 

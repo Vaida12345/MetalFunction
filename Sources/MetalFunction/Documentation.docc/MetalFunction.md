@@ -9,8 +9,8 @@ The bridge to a Metal function.
 - ``init(name:bundle:constants:)``
 
 ### Buffer Argument
-- ``buffer(start:count:deallocator:)``
-- ``buffer(_:deallocator:)``
+- ``buffer(start:count:options:deallocator:)``
+- ``buffer(_:options:deallocator:)``
 - ``buffer(_:)``
 - ``buffer(copying:)``
 

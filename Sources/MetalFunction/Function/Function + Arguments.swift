@@ -42,12 +42,15 @@ extension MetalFunction {
     ///
     /// - term device: Address space (GPU buffer memory)
     /// - term const: the float values are read-only
+    ///
+    /// You can pass `cpuCacheModeWriteCombined` for buffers that are upload-only.
     @inlinable
     public func buffer<T>(
         _ buffer: UnsafeMutableBufferPointer<T>,
+        options: MTLResourceOptions = [],
         deallocator: (@Sendable (UnsafeMutableRawPointer, Int) -> Void)? = nil
     ) throws -> MetalFunction where T: BitwiseCopyable {
-        return try self.buffer(start: buffer.baseAddress!, count: buffer.count, deallocator: deallocator)
+        return try self.buffer(start: buffer.baseAddress!, count: buffer.count, options: options, deallocator: deallocator)
     }
     
     /// Binds a `UnsafeMutablePointer`.
@@ -61,14 +64,22 @@ extension MetalFunction {
     ///
     /// - term device: Address space (GPU buffer memory)
     /// - term const: the float values are read-only
+    ///
+    /// You can pass `cpuCacheModeWriteCombined` for buffers that are upload-only.
     @inlinable
     public func buffer<T>(
         start: UnsafeMutablePointer<T>,
         count: Int,
+        options: MTLResourceOptions = [],
         deallocator: (@Sendable (UnsafeMutableRawPointer, Int) -> Void)? = nil
     ) throws -> MetalFunction where T: BitwiseCopyable {
         let label = "Buffer<\(T.self)>(cpuAddress: \(start), count: \(count))"
-        guard let buffer = try MetalExecutor.get().computeDevice.makeBuffer(bytesNoCopy: start, length: count &* MemoryLayout<T>.stride, deallocator: deallocator) else {
+        guard let buffer = try MetalExecutor.get().computeDevice.makeBuffer(
+            bytesNoCopy: start,
+            length: count &* MemoryLayout<T>.stride,
+            options: options,
+            deallocator: deallocator
+        ) else {
             throw ExecutionError.cannotCreateBuffer(label)
         }
         buffer.label = label
@@ -76,7 +87,7 @@ extension MetalFunction {
         return self.buffer(buffer)
     }
     
-    /// Copies an array as input buffer.
+    /// Copies an input-only array.
     ///
     /// You can use this method to attach an argument to MSL.
     /// ```c
@@ -89,13 +100,19 @@ extension MetalFunction {
     public func buffer<T>(
         copying array: Array<T>
     ) throws -> MetalFunction where T: BitwiseCopyable {
-        let label = "Buffer<\(T.self)>(count: \(array.count))"
-        guard let buffer = try MetalExecutor.get().computeDevice.makeBuffer(bytes: array, length: array.count &* MemoryLayout<T>.stride) else {
-            throw ExecutionError.cannotCreateBuffer(label)
+        try array.withUnsafeBytes { rawBuffer in
+            let label = "Buffer<\(T.self)>(count: \(array.count))"
+            
+            guard let buffer = try MetalExecutor.get().computeDevice.makeBuffer(
+                bytes: rawBuffer.baseAddress!, length: rawBuffer.count,
+                options: [.cpuCacheModeWriteCombined]
+            ) else {
+                throw ExecutionError.cannotCreateBuffer(label)
+            }
+            buffer.label = label
+            
+            return self.buffer(buffer)
         }
-        buffer.label = label
-        
-        return self.buffer(buffer)
     }
     
     /// Copies data directly to the GPU to populate an entry in the buffer argument table.
