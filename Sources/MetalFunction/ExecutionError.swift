@@ -6,12 +6,16 @@
 //
 
 
-/// Errors thrown by a `MetalFunction`.
-public enum ExecutionError: Error {
-    /// Metal is not supported
-    case notSupported
+extension MetalFunction {
     
-    case cannotCreateCommandBuffer
-    case cannotCreateCommandEncoder
-    case cannotCreateBuffer(String)
+    /// Errors thrown by a `MetalFunction`.
+    public enum ExecutionError: Error {
+        /// Metal is not supported
+        case notSupported
+        
+        case cannotCreateCommandBuffer
+        case cannotCreateCommandEncoder
+        case cannotCreateBuffer(String)
+    }
+    
 }

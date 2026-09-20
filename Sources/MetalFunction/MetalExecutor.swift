@@ -89,7 +89,7 @@ final actor MetalExecutor {
         if let shared {
             return shared
         } else {
-            throw ExecutionError.notSupported
+            throw MetalFunction.ExecutionError.notSupported
         }
     }
     
