@@ -16,7 +16,41 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Build Metal library
+      shell: bash
+      run: |
+        set -euo pipefail
+        shopt -s nullglob
+    
+        METAL_DIR="Tests/MetalFunctionTests/Resources"
+        BUILD_DIR=".build/metal"
+    
+        mkdir -p "$BUILD_DIR"
+    
+        air_files=()
+    
+        for source in "$METAL_DIR"/*.metal; do
+          name="$(basename "${source%.metal}")"
+          output="$BUILD_DIR/$name.air"
+    
+          xcrun -sdk macosx metal \
+            -c "$source" \
+            -o "$output"
+    
+          air_files+=("$output")
+        done
+    
+        if (( ${#air_files[@]} == 0 )); then
+          echo "No .metal files found in $METAL_DIR"
+          exit 1
+        fi
+    
+        xcrun -sdk macosx metallib \
+          "${air_files[@]}" \
+          -o "$METAL_DIR/default.metallib"
+          
     - name: Build
       run: swift build -v
+      
     - name: Run tests
       run: swift test -v
