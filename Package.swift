@@ -27,7 +27,10 @@ let package = Package(
         ),
         .testTarget(
             name: "MetalFunctionTests",
-            dependencies: ["MetalFunction"]
+            dependencies: ["MetalFunction"],
+            resources: [
+                .process("Resources")
+            ]
         ),
     ],
     swiftLanguageModes: [.v6]
