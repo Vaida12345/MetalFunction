@@ -1,7 +1,5 @@
 # ``MetalFunction/MetalFunction``
 
-The bridge to a Metal function.
-
 ## Topics
 
 ### Initializer

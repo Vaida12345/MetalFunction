@@ -22,4 +22,3 @@ You can use ``MetalFunction/isSupported`` to determine if metal is supported on 
 
 ### APIs
 - ``MetalFunction``
-- ``ExecutionError``
